@@ -2,12 +2,12 @@ import os
 
 import torch
 from torch.utils.data import DataLoader, SequentialSampler
-from args import parse_args
+from base.args import parse_args
 
-from datasets import SASRecDataset
-from models import S3RecModel
-from trainers import FinetuneTrainer
-from utils import (
+from base.datasets import SASRecDataset
+from base.models import S3RecModel
+from base.trainers import FinetuneTrainer
+from base.utils import (
     check_path,
     generate_submission_file,
     get_item2attribute_json,

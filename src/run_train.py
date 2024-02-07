@@ -3,12 +3,12 @@ import os
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
-from args import parse_args
+from base.args import parse_args
 
-from datasets import SASRecDataset
-from models import S3RecModel
-from trainers import FinetuneTrainer
-from utils import (
+from base.datasets import SASRecDataset
+from base.models import S3RecModel
+from base.trainers import FinetuneTrainer
+from base.utils import (
     EarlyStopping,
     check_path,
     get_item2attribute_json,
