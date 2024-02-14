@@ -1,11 +1,14 @@
 import os
 import torch
-# import wandb
+import torch.nn as nn
+import wandb
 
 import argparse
-
 from module.trainer import trainer
-from module.utils import set_seed, parse_args_boolean
+from module.utils import set_seed, parse_args_boolean, logging_conf, get_logger
+
+logger = get_logger(logger_conf=logging_conf)
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -42,3 +45,4 @@ def main():
     
 if __name__ == "__main__":
     main()
+    

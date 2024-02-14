@@ -115,3 +115,39 @@ class BERTRecDataSet(Dataset):
     def random_neg_sampling(self, rated_item : list, num_item_sample : int):
         nge_samples = random.sample(list(self._all_items - set(rated_item)), num_item_sample)
         return nge_samples
+    
+
+class SASRecDataSet(Dataset):
+    def __init__(self, user_train, max_len, num_user, num_item):
+        self.user_train = user_train
+        self.max_len = max_len
+        self.num_user = num_user
+        self.num_item = num_item
+        self._all_items = set([i for i in range(1, self.num_item + 1)])
+
+    def __len__(self):
+        # 총 user의 수 = 학습에 사용할 sequence의 수
+        return self.num_user
+
+    def __getitem__(self, user):
+
+        user_seq = self.user_train[user]
+        user_seq_len = len(user_seq)
+
+        seq = user_seq[-(user_seq_len) : -1]
+        seq = seq[-self.max_len :]
+
+        pos = user_seq[-(user_seq_len - 1) : ]
+        pos = pos[-self.max_len :]
+
+        neg = random.sample(list(self._all_items - set(user_seq)), len(pos))
+
+        seq = [0] * (self.max_len - len(seq)) + seq
+        pos = [0] * (self.max_len - len(pos)) + pos
+        neg = [0] * (self.max_len - len(neg)) + neg
+
+        return np.array(seq, dtype=np.int32), np.array(pos, dtype=np.int32), np.array(neg, dtype=np.int32)
+
+    def random_neg_sampling(self, rated_item : list, num_item_sample : int):
+        nge_samples = random.sample(list(self._all_items - set(rated_item)), num_item_sample)
+        return nge_samples

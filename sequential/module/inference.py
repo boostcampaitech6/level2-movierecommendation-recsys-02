@@ -6,10 +6,6 @@ import pandas as pd
 def inference(model, user_train, user_valid, max_len, make_sequence_dataset, exp_name):
     model.eval()
 
-    NDCG = 0.0 # NDCG@10
-    HIT = 0.0 # HIT@10
-
-
     users = [user for user in range(make_sequence_dataset.num_user)]
     result = []
     
@@ -34,4 +30,3 @@ def inference(model, user_train, user_valid, max_len, make_sequence_dataset, exp
     
     submit_df = pd.DataFrame(data={'user': submit_user, 'item': submit_item}, columns=['user', 'item'])
     return submit_df
-

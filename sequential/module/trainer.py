@@ -35,7 +35,7 @@ def train(model, criterion, optimizer, data_loader, device):
     return loss_val
 
 
-def evaluate(model, user_train, user_valid, max_len, bert4rec_dataset, make_sequence_dataset):
+def evaluate(model, user_train, user_valid, max_len, dataset, make_sequence_dataset):
     model.eval()
 
     ndcg = 0.0 # NDCG@10
@@ -49,7 +49,7 @@ def evaluate(model, user_train, user_valid, max_len, bert4rec_dataset, make_sequ
     for user in users:
         seq = (user_train[user] + [make_sequence_dataset.num_item + 1])[-max_len:]
         rated = user_train[user] + user_valid[user]
-        items = user_valid[user] + bert4rec_dataset.random_neg_sampling(rated_item = rated, num_item_sample = num_item_sample)
+        items = user_valid[user] + dataset.random_neg_sampling(rated_item = rated, num_item_sample = num_item_sample)
 
         with torch.no_grad():
             predictions = -model(np.array([seq]))
@@ -134,7 +134,7 @@ def trainer(config):
             user_train = user_train,
             user_valid = user_valid,
             max_len = config.max_len,
-            bert4rec_dataset = bert4rec_dataset,
+            dataset = dataset,
             make_sequence_dataset = make_sequence_dataset,
             )
 
