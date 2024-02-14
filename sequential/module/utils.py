@@ -3,6 +3,7 @@ import torch
 import numpy as np
 import random
 import time
+import argparse
 
 def set_seed(seed: int):
     os.environ["PYTHONHASHSEED"] = str(seed)
@@ -53,3 +54,13 @@ def get_expname(args):
     save_time = now_date + '_' + now_hour.replace(':', '')
     expname = save_time + '_' + args.model
     return expname
+
+# 입력값을 소문자로 변환
+def parse_args_boolean(value):
+    lower_value = value.lower()
+    if lower_value == 'true':
+        return True
+    elif lower_value == 'false':
+        return False
+    else:
+        raise argparse.ArgumentTypeError(f'--해당 인자에는 [true/false] 만 입력 가능합니다: {value}')

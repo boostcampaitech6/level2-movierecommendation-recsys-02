@@ -33,6 +33,5 @@ def inference(model, user_train, user_valid, max_len, make_sequence_dataset, exp
     submit_user = np.concatenate(submit_user)
     
     submit_df = pd.DataFrame(data={'user': submit_user, 'item': submit_item}, columns=['user', 'item'])
-    submit_df.to_csv(f"outputs/{exp_name}_submission.csv", index=False)
-    return
+    return submit_df
 

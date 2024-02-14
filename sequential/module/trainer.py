@@ -1,3 +1,4 @@
+import wandb
 import torch
 import torch.nn as nn
 import numpy as np
@@ -54,11 +55,6 @@ def evaluate(model, user_train, user_valid, max_len, bert4rec_dataset, make_sequ
             predictions = -model(np.array([seq]))
             predictions = predictions[0][-1][items] # sampling
             rank = predictions.argsort().argsort()[0].item()
-            # ranked_items = predictions.argsort()[:10]
-
-        # if rank < 10: #Top10
-        #     ndcg += 1 / np.log2(rank + 2)/10
-        #     hit += 1/10
             
         # rank for valid item
         rank_list = predictions.argsort().argsort()[:10].cpu().numpy() 
@@ -79,46 +75,49 @@ def evaluate(model, user_train, user_valid, max_len, bert4rec_dataset, make_sequ
 
 
 def trainer(config):
-    exp_name = get_expname(config) 
+    exp_name = get_expname(config)
+    if config.wandb:   
+        # wandb initialization
+        wandb.init(entity='raise_level2', project="Movie_Rec")
+        wandb.run.name = exp_name
+        wandb.run.save() 
     
     logger.info("Preparing data ...")
     make_sequence_dataset = MakeSequenceDataSet(config = config)
     user_train, user_valid = make_sequence_dataset.get_train_valid_data()
     
-    bert4rec_dataset = BERTRecDataSet(
-        user_train = user_train,
-        max_len = config.max_len,
-        num_user = make_sequence_dataset.num_user,
-        num_item = make_sequence_dataset.num_item,
-        mask_prob = config.mask_prob,
-        )
+    if config.model == 'bert4rec':
+        dataset = BERTRecDataSet(
+            user_train = user_train,
+            max_len = config.max_len,
+            num_user = make_sequence_dataset.num_user,
+            num_item = make_sequence_dataset.num_item,
+            mask_prob = config.mask_prob,
+            )
+        
+        logger.info("Building Model ...")
+        model = BERT4Rec(
+            num_user = make_sequence_dataset.num_user,
+            num_item = make_sequence_dataset.num_item,
+            hidden_units = config.hidden_units,
+            num_heads = config.num_heads,
+            num_layers = config.num_layers,
+            max_len = config.max_len,
+            dropout_rate = config.dropout_rate,
+            device = device,
+            ).to(device)
+        
     data_loader = DataLoader(
-        bert4rec_dataset,
+        dataset,
         batch_size = config.batch_size,
         shuffle = True,
         pin_memory = True,
         num_workers = config.num_workers,
         )
-    
-    
-    logger.info("Building Model ...")
-    model = BERT4Rec(
-        num_user = make_sequence_dataset.num_user,
-        num_item = make_sequence_dataset.num_item,
-        hidden_units = config.hidden_units,
-        num_heads = config.num_heads,
-        num_layers = config.num_layers,
-        max_len = config.max_len,
-        dropout_rate = config.dropout_rate,
-        device = device,
-        ).to(device)
-
+        
     criterion = nn.CrossEntropyLoss(ignore_index=0) # label이 0인 경우 무시
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
     
-    # loss_list = []
-    # ndcg_list = []
-    # hit_list = []
     
     logger.info(f"Trainning...")
     for epoch in range(1, config.num_epochs + 1):
@@ -140,10 +139,17 @@ def trainer(config):
             )
 
         logger.info(f'Epoch: {epoch:3d}| Train loss: {train_loss:.5f}| NDCG@10: {ndcg:.5f}| HIT@10: {hit:.5f} | RECALL@10: {recall:.5f}')
+        
+        if config.wandb:
+            wandb.log(dict(epoch=epoch,
+                        train_loss=train_loss,
+                        nDCG=ndcg,
+                        Hit_rate=hit,
+                        Recall=recall))
             
     
     logger.info(f"Inference on Test Data ...")
-    inference(model = model,
+    submit_df = inference(model = model,
           user_train = user_train,
           user_valid = user_valid,
           max_len = config.max_len,
@@ -151,3 +157,10 @@ def trainer(config):
           exp_name = exp_name
           )
     logger.info(f"Inference Finish ...")
+    submit_df.to_csv(f"outputs/{exp_name}_submission.csv", index=False)
+    
+    if config.wandb:
+        submission_artifact = wandb.Artifact(f'{exp_name}_submission', type='output')
+        submission_artifact.add_file(local_path=f"outputs/{exp_name}_submission.csv")
+        wandb.log_artifact(submission_artifact)
+        wandb.finish()
