@@ -10,7 +10,9 @@ def get_config_combination_list(model_name):
     comb_list = None
     model_name_lower = model_name.lower()
     with open("./configs/config_combination.txt", "r") as file:
-        for line in file:
+        for idx,line in enumerate(file):
+            if idx == 0:
+                continue
             splited_line = line.split(' ')
             if splited_line[0] == model_name_lower:
                 comb_list = splited_line[1:]
@@ -24,7 +26,7 @@ if __name__ == "__main__":
     parser.add_argument('model', type=str)
     parser.add_argument('--dataset',default='ML',type=str)
     args = parser.parse_args()    
-    
+
     # run
     run_recbole(dataset=args.dataset, model=args.model, config_file_list = get_config_combination_list(args.model))
     
