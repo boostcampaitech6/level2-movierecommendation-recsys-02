@@ -80,7 +80,7 @@ def main():
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--data_path", default="../data/train/", type=str, help="Data path")
+    parser.add_argument("--data_path", default="../../data/train/", type=str, help="Data path")
     parser.add_argument("--seed", default=42, type=int, help="Seed")
     parser.add_argument("--factors", default=20, type=int, help="latent factors")
     parser.add_argument("--regularization", default=0.1, type=int, help="regularizaton")
