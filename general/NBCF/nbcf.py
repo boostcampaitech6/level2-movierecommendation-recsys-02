@@ -80,7 +80,7 @@ def main():
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--data_path", default="../data/train/", type=str, help="Data path")
+    parser.add_argument("--data_path", default="../../data/train/", type=str, help="Data path")
     parser.add_argument("--seed", default=42, type=int, help="Seed")
     parser.add_argument("--output_dir", default="outputs/", type=str, help="Submission path")
     
