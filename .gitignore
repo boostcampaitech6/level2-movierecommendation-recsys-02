@@ -233,4 +233,11 @@ pyrightconfig.json
 
 */outputs/
 *.pt
+*.pth
+*/log_tensorboard/
+*/log/
+*/dataset/
+*/data/
+
 # End of https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks,linux,visualstudiocode
+
