@@ -2,4 +2,32 @@ Model_name / eval.yaml / Model.yaml / .... etc..
 ease ./configs/EVAL/eval_ease.yaml ./configs/Model/EASE.yaml
 recvae ./configs/EVAL/eval_rec_vae.yaml ./configs/Model/RecVae.yaml
 sasrec ./configs/EVAL/eval_sasrec.yaml ./configs/Model/Sasrec.yaml ./configs/Training/SasrecTrain.yaml ./configs/Dataset/ML_sequence.yaml
-lightgcn ./configs/EVAL/eval_lightgcn.yaml ./configs/Model/LightGCN.yaml
+lightgcn ./configs/EVAL/eval_lightgcn.yaml ./configs/Model/LightGCN.yaml ./configs/Training/train.yaml
+fm ./configs/Model/FM.yaml ./configs/Dataset/ML_sequence.yaml ./configs/Training/train.yaml
+pop
+nais
+neumf
+convncf
+dmf
+fism
+spectralcf
+gcmc
+ngcf 
+dgcf
+line
+multidae
+macridvae
+cdae
+enmf
+nncf
+ract
+slimelastic
+sgl
+admmslim
+nceplrec
+simplex
+ncl
+random
+
+diffrec
+ldiffrec
