@@ -13,7 +13,7 @@ def get_config_combination_list(model_name):
         for idx,line in enumerate(file):
             if idx == 0:
                 continue
-            splited_line = line.split(' ')
+            splited_line = line.replace('\n','').split(' ')
             if splited_line[0] == model_name_lower:
                 comb_list = splited_line[1:]
     if comb_list == None:
@@ -25,8 +25,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Input Model Name.')
     parser.add_argument('model', type=str)
     parser.add_argument('--dataset',default='ML',type=str)
+    parser.add_argument('--gpu_id',default='0',type=str)
     args = parser.parse_args()    
+    arg_dict = {"gpu_id" : args.gpu_id,
+                "learning_rate" : 0.1}
 
     # run
-    run_recbole(dataset=args.dataset, model=args.model, config_file_list = get_config_combination_list(args.model))
+    run_recbole(dataset=args.dataset, model=args.model, config_file_list = get_config_combination_list(args.model), config_dict = arg_dict)
     
